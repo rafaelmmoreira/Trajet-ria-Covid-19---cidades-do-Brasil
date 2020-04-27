@@ -101,6 +101,7 @@ class App:
 
             for d in tdatas:
                 tcasos.append(casosEstado[d])
+            
         else:
             tdatas = copy.deepcopy(self.dados[self.estado.get()][self.cidadesListbox.get(self.cidadesListbox.curselection())]['datas'])
             tcasos = copy.deepcopy(self.dados[self.estado.get()][self.cidadesListbox.get(self.cidadesListbox.curselection())]['casos'])
@@ -109,13 +110,12 @@ class App:
         tnovos = [0]
 
         if len(tcasos) > 2:
-            # em caso de base de dados inconsistente...
-            # ex: algumas cidades atualizadas, outras não
-            # o total de casos pode "cair", o que é impossível na prática
-            # então despreza essa última data
-            if tcasos[len(tcasos)-1] < tcasos[len(tcasos)-2]:
-                tcasos = tcasos[:-1]
-                tdatas = tdatas[:-1]
+        # é possível estar faltando data... neste caso, a data é = 0
+        # em casos assim, vamos considerar o número de casos do dia
+        # anterior
+            for i in range(1, len(tcasos)):
+                if tcasos[i] < tcasos[i-1]:
+                    tcasos[i] = tcasos[i-1]
         
         for i in range(1,len(tcasos)):
             tnovos.append(tcasos[i] - tcasos[i-1])
