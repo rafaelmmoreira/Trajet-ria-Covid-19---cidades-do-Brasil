@@ -2,6 +2,7 @@
 Acompanhamento da trajetória dos casos do Covid-19 por cidade brasileira individual usando a metodologia de Aatish Bhatia (https://aatishb.com/covidtrends/)
 
 O site não mostra os casos no Brasil por estado, muito menos por cidade. Tive a ideia inicial de fazer para o estado de São Paulo usando um repositório oficial de dados - o projeto ainda está no ar em: https://github.com/rafaelmmoreira/Trajet-ria-do-Covid-19---S-o-Paulo
+
 Mas após encontrar os dados excelentes do https://brasil.io/home/ resolvi expandir a ideia original.
 
 ## Sobre a metodologia:
