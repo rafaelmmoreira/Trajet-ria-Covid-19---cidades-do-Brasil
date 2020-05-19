@@ -24,9 +24,9 @@ Durante o período de crescimento exponencial, o gráfico aproxima-se bastante d
 
 * 3) O programa usa dados oficiais para gerar o gráfico. É sabido que há uma grande quantidade de subnotificação de casos por falta de testes (https://drive.google.com/file/d/1_whlqZnGgvqHuWCG4-JyiL2X9WXpZAe3/view, https://covid19br.github.io/informacoes.html).
 
-<p align="center"><img src="cruzeiro.png"><br>Gráfico da cidade de Cachoeira Paulista-SP<br><br></p>
+<p align="center"><img src="cruzeiro.png"><br>Gráfico da cidade de Cruzeiro-SP<br><br></p>
 
-Em suma, esse programa é apenas (mais) uma ferramenta para visualizar as tendências dos dados oficiais em SP.
+Em suma, esse programa é apenas (mais) uma ferramenta para visualizar as tendências dos dados oficiais no Brasil.
 
 Se você é pesquisador, sinta-se à vontade para se modificar ou se inspirar nesse código para fazer outras análises ou estudar outras regiões.
 
