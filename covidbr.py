@@ -37,7 +37,7 @@ class App:
         self.scrollbar = tkinter.Scrollbar(self.frame2)
         self.scrollbar.grid(row = 1, column = 2, sticky = tkinter.N+tkinter.S)
 
-        self.fig = Figure(figsize=(5, 4), dpi=100)
+        self.fig = Figure(figsize=(10, 6), dpi=100)
         
         self.cidadesListbox = tkinter.Listbox(self.frame2)
 
@@ -120,30 +120,22 @@ class App:
         for i in range(1,len(tcasos)):
             tnovos.append(tcasos[i] - tcasos[i-1])
 
-        while (len(tcasos)) % 7 != 0:
+        while (len(tnovos)) <= 7:
             tcasos.insert(0, 0)
             tnovos.insert(0, 0)
             tdatas.insert(0, '')
-        tcasos.insert(0, 0)
-        tnovos.insert(0, 0)
-        tdatas.insert(0, '')
 
-        totaissem = []
-        novossem = []
-        ultimadata = ''
-        n = 0
+        novossem = [0 for x in range(7)]
         
-        for i in range(len(tcasos)):
-            if i % 7 == 0:
-                ultimadata = tdatas[i]
-                totaissem.append(tcasos[i])
-                novossem.append(n)
-                n = 0
-            n += tnovos[i]
+        for i in range(7, len(tcasos)):
+            n = 0
+            for j in range(7):
+                n += tnovos[i-j]
+            novossem.append(n)
 
         self.fig.clf()
         ax = self.fig.add_subplot(111)
-        ax.set_xlabel('Total de casos confirmados (até {})'.format(ultimadata))
+        ax.set_xlabel('Total de casos confirmados (até {})'.format(tdatas[-1]))
         ax.set_ylabel('Total de novos casos (por semana)')
         if porPais:
             ax.set_title('Trajetória dos casos de COVID-19 no Brasil')
@@ -155,7 +147,7 @@ class App:
         ax.set_xscale('log')
         ax.set_yscale('log')
         ax.grid(True)
-        ax.plot(totaissem, novossem, 'ro-')
+        ax.plot([0]+tcasos, [0]+novossem, 'ro-', markersize=2)
         self.canvas.draw()
 
     def baixaDados(self):
