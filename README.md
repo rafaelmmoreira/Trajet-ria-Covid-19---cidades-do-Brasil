@@ -10,11 +10,11 @@ Mas após encontrar os dados excelentes do https://brasil.io/home/ resolvi expan
 
 Durante o período de crescimento exponencial, o gráfico aproxima-se bastante de uma reta crescente. Conforme a doença desacelera, mesmo que seja uma tendência sutil de achatamento na curva exponencial original, este gráfico vai mostrar a reta curvando-se para a horizontal, e quando os casos começarem a cair, a reta tornará-se decrescente. Vale à pena ver os gráficos de alguns países diferentes no site original para entender melhor o gráfico. Também recomendo muito assistir o vídeo do canal minutephysics a respeito (https://www.youtube.com/watch?v=54XLXg4fYsc).
 
-<p align="center"><img src="brasil.png"><br>Gráfico agrupando dados do Brasil todo<br><br></p>
+<p align="center"><img src="brasil.png"><br>Gráfico agrupando casos do Brasil todo<br><br></p>
 
-<p align="center"><img src="sp.png"><br>Gráfico agrupando dados do Estado de São Paulo<br><br></p>
+<p align="center"><img src="sp.png"><br>Gráfico agrupando óbitos do Estado de São Paulo<br><br></p>
 
-<p align="center"><img src="saopaulo.png"><br>Gráfico da cidade de São Paulo<br><br></p>
+<p align="center"><img src="saopaulo.png"><br>Gráfico dos casos e óbitos da cidade de São Paulo<br><br></p>
 
 É importante notar que temos algumas limitações:
 

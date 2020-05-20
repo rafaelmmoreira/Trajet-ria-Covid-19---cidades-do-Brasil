@@ -46,6 +46,18 @@ class App:
         self.cidadesListbox.config(yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.cidadesListbox.yview)   
 
+        self.optVar = tkinter.IntVar()
+        self.optVar.set(1)
+        self.optCasos = tkinter.Radiobutton(self.frame2, text='Casos confirmados', 
+                variable=self.optVar, value=1)
+        self.optCasos.grid(row=27, column=1, sticky=tkinter.W)
+        self.optObitos = tkinter.Radiobutton(self.frame2, text='Óbitos confirmados',
+                variable=self.optVar, value=2)        
+        self.optObitos.grid(row=28, column=1, sticky=tkinter.W)
+        self.optAmbos = tkinter.Radiobutton(self.frame2, text='Ambos',
+                variable=self.optVar, value=3)
+        self.optAmbos.grid(row=29, column=1, sticky=tkinter.W)
+
         self.botaoC = tkinter.Button(self.frame2, text = 'Gerar gráfico da cidade',
                 command = lambda: self.desenhaGrafico())
         self.botaoC.grid(row=30, column=1)
@@ -68,16 +80,30 @@ class App:
 
         self.janela.mainloop()
     
-    def desenhaGrafico(self, porEstado=False, porPais=False):
+    def desenhaGrafico(self, porEstado=False, porPais=False, limpa=True):
+        if self.optVar.get() == 1:
+            opcao = 'casos'
+            cor = 'blue'
+        elif self.optVar.get() == 2:
+            opcao = 'obitos'
+            cor = 'red'
+        else:
+            self.optVar.set(1)
+            self.desenhaGrafico(porEstado, porPais, True)
+            self.optVar.set(2)
+            self.desenhaGrafico(porEstado, porPais, False)
+            self.optVar.set(3)
+            return
+
         if porPais:
             casosBrasil = {}
             for e in self.dados:
                 for c in self.dados[e]:
                     for i in range(len(self.dados[e][c]['datas'])):
                         if self.dados[e][c]['datas'][i] in casosBrasil:
-                            casosBrasil[self.dados[e][c]['datas'][i]] += self.dados[e][c]['casos'][i]
+                            casosBrasil[self.dados[e][c]['datas'][i]] += self.dados[e][c][opcao][i]
                         else:
-                            casosBrasil[self.dados[e][c]['datas'][i]] = self.dados[e][c]['casos'][i]
+                            casosBrasil[self.dados[e][c]['datas'][i]] = self.dados[e][c][opcao][i]
 
             tdatas = list(casosBrasil.keys())
             tdatas.sort()
@@ -91,9 +117,9 @@ class App:
             for c in self.dados[self.estado.get()]:
                 for i in range(len(self.dados[self.estado.get()][c]['datas'])):
                     if self.dados[self.estado.get()][c]['datas'][i] in casosEstado:
-                        casosEstado[self.dados[self.estado.get()][c]['datas'][i]] += self.dados[self.estado.get()][c]['casos'][i]
+                        casosEstado[self.dados[self.estado.get()][c]['datas'][i]] += self.dados[self.estado.get()][c][opcao][i]
                     else:
-                        casosEstado[self.dados[self.estado.get()][c]['datas'][i]] = self.dados[self.estado.get()][c]['casos'][i]
+                        casosEstado[self.dados[self.estado.get()][c]['datas'][i]] = self.dados[self.estado.get()][c][opcao][i]
        
             tdatas = list(casosEstado.keys())
             tdatas.sort()
@@ -104,10 +130,13 @@ class App:
             
         else:
             tdatas = copy.deepcopy(self.dados[self.estado.get()][self.cidadesListbox.get(self.cidadesListbox.curselection())]['datas'])
-            tcasos = copy.deepcopy(self.dados[self.estado.get()][self.cidadesListbox.get(self.cidadesListbox.curselection())]['casos'])
+            tcasos = copy.deepcopy(self.dados[self.estado.get()][self.cidadesListbox.get(self.cidadesListbox.curselection())][opcao])
             tdatas.reverse()
             tcasos.reverse()
         tnovos = [0]
+
+        if opcao == 'obitos':
+            opcao = 'óbitos'
 
         if len(tcasos) > 2:
         # é possível estar faltando data... neste caso, a data é = 0
@@ -133,21 +162,25 @@ class App:
                 n += tnovos[i-j]
             novossem.append(n)
 
-        self.fig.clf()
-        ax = self.fig.add_subplot(111)
-        ax.set_xlabel('Total de casos confirmados (até {})'.format(tdatas[-1]))
-        ax.set_ylabel('Total de novos casos (por semana)')
-        if porPais:
-            ax.set_title('Trajetória dos casos de COVID-19 no Brasil')
-        
-        elif porEstado:
-            ax.set_title('Trajetória dos casos de COVID-19 em ' + self.estado.get())
+        if limpa:
+            self.fig.clf()
         else:
-            ax.set_title('Trajetória dos casos de COVID-19 em ' + self.cidadesListbox.get(self.cidadesListbox.curselection()))
+            opcao = 'casos/óbitos'
+        ax = self.fig.add_subplot(111)
+        ax.set_xlabel('Total de {} confirmados (até {})'.format(opcao, tdatas[-1]))
+        ax.set_ylabel('Total de novos {} (por semana)'.format(opcao))
+        if porPais:
+            ax.set_title('Trajetória dos {} de COVID-19 no Brasil'.format(opcao))        
+        elif porEstado:
+            ax.set_title('Trajetória dos {} de COVID-19 em '.format(opcao) + self.estado.get())
+        else:
+            ax.set_title('Trajetória dos {} de COVID-19 em '.format(opcao) + self.cidadesListbox.get(self.cidadesListbox.curselection()))
         ax.set_xscale('log')
         ax.set_yscale('log')
         ax.grid(True)
-        ax.plot([0]+tcasos, [0]+novossem, 'ro-', markersize=2)
+        ax.plot([0]+tcasos, [0]+novossem, 'o-', color=cor, markersize=2)
+        if not limpa:
+            self.fig.legend(labels=['casos', 'óbitos'])
         self.canvas.draw()
 
     def baixaDados(self):
@@ -170,11 +203,13 @@ class App:
                         if cidade not in self.dados[estado]:
                             self.dados[estado][cidade] = {
                                 'casos':[],
-                                'datas':[]
+                                'datas':[],
+                                'obitos':[]
                                 }
         
                         self.dados[estado][cidade]['casos'].append(ocorrencia['confirmed'])
                         self.dados[estado][cidade]['datas'].append(ocorrencia['date'])
+                        self.dados[estado][cidade]['obitos'].append(ocorrencia['deaths'])
                         
 
                 if req['next'] == None:
