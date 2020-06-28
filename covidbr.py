@@ -1,84 +1,80 @@
-import copy
 import matplotlib.pyplot as plt
-import numpy as np
-import os
 import requests
-import tkinter
+import tkinter as tk
+from time import sleep
 
 from matplotlib.backends.backend_tkagg import (
     FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.figure import Figure
 
 
-class App:
+class App(tk.Tk):
 
     def __init__(self):
         self.baixaDados()
-
-        self.janela = tkinter.Tk()
-
-        self.janela.title('Evolução Covid-19 no Brasil')
-        self.frame1 = tkinter.Frame()
-        self.frame1.pack(side=tkinter.LEFT)
-        self.frame2 = tkinter.Frame()
-        self.frame2.pack(side=tkinter.LEFT)
+        super().__init__()
+        self.title('Evolução Covid-19 no Brasil')
+        self.frame1 = tk.Frame(self)
+        self.frame1.pack(side=tk.LEFT)
+        self.frame2 = tk.Frame(self)
+        self.frame2.pack(side=tk.LEFT)
         
         self.estados = [e for e in self.dados]
         self.estados.sort()
-        self.estado = tkinter.StringVar()
-        self.cidade = tkinter.StringVar()
+        self.estado = tk.StringVar()
+        self.cidade = tk.StringVar()
         self.estado.set(self.estados[0])
 
-        self.estadosOptionMenu = tkinter.OptionMenu(self.frame2, self.estado,
+        self.estadosOptionMenu = tk.OptionMenu(self.frame2, self.estado,
                                                     *self.estados,
             command=lambda x:self.interfaceAtualizaCidades())
-        self.estadosOptionMenu.grid(row = 0, column = 1, sticky = tkinter.N)
+        self.estadosOptionMenu.grid(row = 0, column = 1, sticky = tk.N)
 
-        self.scrollbar = tkinter.Scrollbar(self.frame2)
-        self.scrollbar.grid(row = 1, column = 2, sticky = tkinter.N+tkinter.S)
+        self.scrollbar = tk.Scrollbar(self.frame2)
+        self.scrollbar.grid(row = 1, column = 2, sticky = tk.N + tk.S)
 
         self.fig = Figure(figsize=(10, 6), dpi=100)
         
-        self.cidadesListbox = tkinter.Listbox(self.frame2)
+        self.cidadesListbox = tk.Listbox(self.frame2)
 
         self.interfaceAtualizaCidades()
-        self.cidadesListbox.grid(row = 1, column = 1, sticky = tkinter.N+tkinter.S)
+        self.cidadesListbox.grid(row = 1, column = 1, sticky = tk.N + tk.S)
         self.cidadesListbox.config(yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.cidadesListbox.yview)   
 
-        self.optVar = tkinter.IntVar()
+        self.optVar = tk.IntVar()
         self.optVar.set(1)
-        self.optCasos = tkinter.Radiobutton(self.frame2, text='Casos confirmados', 
+        self.optCasos = tk.Radiobutton(self.frame2, text='Casos confirmados', 
                 variable=self.optVar, value=1)
-        self.optCasos.grid(row=27, column=1, sticky=tkinter.W)
-        self.optObitos = tkinter.Radiobutton(self.frame2, text='Óbitos confirmados',
+        self.optCasos.grid(row=27, column=1, sticky=tk.W)
+        self.optObitos = tk.Radiobutton(self.frame2, text='Óbitos confirmados',
                 variable=self.optVar, value=2)        
-        self.optObitos.grid(row=28, column=1, sticky=tkinter.W)
-        self.optAmbos = tkinter.Radiobutton(self.frame2, text='Ambos',
+        self.optObitos.grid(row=28, column=1, sticky=tk.W)
+        self.optAmbos = tk.Radiobutton(self.frame2, text='Ambos',
                 variable=self.optVar, value=3)
-        self.optAmbos.grid(row=29, column=1, sticky=tkinter.W)
+        self.optAmbos.grid(row=29, column=1, sticky=tk.W)
 
-        self.botaoC = tkinter.Button(self.frame2, text = 'Gerar gráfico da cidade',
+        self.botaoC = tk.Button(self.frame2, text = 'Gerar gráfico da cidade',
                 command = lambda: self.desenhaGrafico())
         self.botaoC.grid(row=30, column=1)
 
-        self.botaoE = tkinter.Button(self.frame2, text = 'Gerar gráfico do estado',
+        self.botaoE = tk.Button(self.frame2, text = 'Gerar gráfico do estado',
                 command = lambda: self.desenhaGrafico(True))
         self.botaoE.grid(row=31, column=1)
 
-        self.botaoP = tkinter.Button(self.frame2, text = 'Gerar gráfico do Brasil',
+        self.botaoP = tk.Button(self.frame2, text = 'Gerar gráfico do Brasil',
                 command = lambda: self.desenhaGrafico(False, True))
         self.botaoP.grid(row=32, column=1)
         
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.frame1)
         self.canvas.draw()
-        self.canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
         self.toolbar = NavigationToolbar2Tk(self.canvas, self.frame1)
         self.toolbar.update()
-        self.canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+        self.canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
-        self.janela.mainloop()
+        self.mainloop()
     
     def desenhaGrafico(self, porEstado=False, porPais=False, limpa=True):
         if self.optVar.get() == 1:
@@ -129,8 +125,8 @@ class App:
                 tcasos.append(casosEstado[d])
             
         else:
-            tdatas = copy.deepcopy(self.dados[self.estado.get()][self.cidadesListbox.get(self.cidadesListbox.curselection())]['datas'])
-            tcasos = copy.deepcopy(self.dados[self.estado.get()][self.cidadesListbox.get(self.cidadesListbox.curselection())][opcao])
+            tdatas = [x for x in self.dados[self.estado.get()][self.cidadesListbox.get(self.cidadesListbox.curselection())]['datas']]
+            tcasos = [x for x in self.dados[self.estado.get()][self.cidadesListbox.get(self.cidadesListbox.curselection())][opcao]]
             tdatas.reverse()
             tcasos.reverse()
         tnovos = [0]
@@ -184,7 +180,7 @@ class App:
         self.canvas.draw()
 
     def baixaDados(self):
-        req = requests.get('https://brasil.io/api/dataset/covid19/caso/data/')
+        req = requests.get('https://brasil.io/api/dataset/covid19/caso/data/?page_size=10000')
         self.dados = dict()
         pag = 1
         prox = True
@@ -218,6 +214,11 @@ class App:
                     url = req['next']
                     req = requests.get(url)
                     pag += 1
+            elif req.status_code == 429:
+                    # se estourou quantidade máxima de requests,
+                    # dá uma folguinha pra API
+                    sleep(10)
+                    req = requests.get(url)
             else:
                 print('Erro', req.status_code)
                 break
@@ -225,10 +226,10 @@ class App:
     def interfaceAtualizaCidades(self):
         cidades = [c for c in self.dados[self.estado.get()]]
         cidades.sort()
-        self.cidadesListbox.delete(0, tkinter.END)
+        self.cidadesListbox.delete(0, tk.END)
         for c in cidades:
-            self.cidadesListbox.insert(tkinter.END, c)
+            self.cidadesListbox.insert(tk.END, c)
         self.cidade.set(cidades[0])
 
         
-app = App()
+App()
